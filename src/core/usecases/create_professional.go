@@ -2,9 +2,17 @@ package usecases
 
 import (
 	"ori_saude_api/src/core/entities"
-	"ori_saude_api/src/infra/database"
+	"ori_saude_api/src/core/repositories"
 )
 
-func CreateProfessional(professional *entities.Professional) error {
-	return database.CreateProfessional(professional)
+type CreateProfessionalUsecase struct {
+	repo repositories.ProfessionalRepository
+}
+
+func NewCreateProfessionalUsecase(repo repositories.ProfessionalRepository) *CreateProfessionalUsecase {
+	return &CreateProfessionalUsecase{repo: repo}
+}
+
+func (uc *CreateProfessionalUsecase) Execute(prof *entities.Professional) error {
+	return uc.repo.CreateProfessional(prof)
 }
