@@ -11,10 +11,10 @@ func NewServer() *gin.Engine {
 	api := r.Group("/professionals")
 	{
 		api.GET("/", controllers.GetProfessionals)
-		//TODO: api.GET("/:id", controllers.GetProfessionalByID)
-		//TODO: api.POST("/", controllers.CreateProfessional)
-		//TODO: api.PUT("/:id", controllers.UpdateProfessional)
-		//TODO: api.DELETE("/:id", controllers.DeleteProfessional)
+		api.GET("/:id", controllers.GetProfessionalByID)
+		api.POST("/", controllers.CreateProfessional)
+		api.PUT("/:id", controllers.UpdateProfessional)
+		api.DELETE("/:id", controllers.DeleteProfessional)
 	}
 
 	return r
