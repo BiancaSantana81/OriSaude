@@ -23,21 +23,24 @@ func CreateProfessional(c *gin.Context, uc *usecases.CreateProfessionalUsecase) 
 	c.JSON(http.StatusCreated, professional)
 }
 
-// func GetProfessionals(c *gin.Context) {
-// 	c.JSON(http.StatusOK, usecases.GetProfessionals())
-// }
+func GetProfessionals(c *gin.Context, uc *usecases.GetProfessionalsUsecase) {
+	professionals, err := uc.Execute()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": professionals})
+}
 
-// func GetProfessionalByID(c *gin.Context) {
-// 	id := c.Param("id")
-// 	professional := usecases.GetProfessionalByID(id)
-// 	if professional == nil {
-// 		c.JSON(http.StatusNotFound, gin.H{"error": "Professional not found"})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, professional)
-// }
-
-
+func GetProfessionalByID(c *gin.Context, uc *usecases.GetProfessionalByIDUsecase) {
+	id := c.Param("id")
+	prof, err := uc.Execute(id)
+	if err != nil {
+		c.JSON(404, gin.H{"error": "Professional not found"})
+		return
+	}
+	c.JSON(200, prof)
+}
 
 // func UpdateProfessional(c *gin.Context) {
 // 	id := c.Param("id")

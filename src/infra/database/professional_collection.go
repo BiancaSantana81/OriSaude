@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"log"
 	"ori_saude_api/src/core/entities"
 	"ori_saude_api/src/core/repositories"
 
@@ -24,58 +23,42 @@ func NewFirebaseProfessionalRepository(client *db.Client, ctx context.Context) r
 func (r *FirebaseProfessionalRepository) CreateProfessional(prof *entities.Professional) error {
 	ref := r.client.NewRef("professionals")
 
-	// Push cria uma referência com ID automático
 	newRef, err := ref.Push(r.ctx, nil)
 	if err != nil {
 		return err
 	}
 
-	prof.ID = newRef.Key // ID gerado pelo Firebase
+	prof.ID = newRef.Key
 
-	// Salva o objeto completo no Firebase
 	if err := newRef.Set(r.ctx, prof); err != nil {
 		return err
 	}
-
-	log.Printf("✅ Profissional criado em: professionals/%s", newRef.Key)
 	return nil
 }
 
-// func GetAllProfessionals() []entities.Professional {
-// 	return professionals
-// }
+func (r *FirebaseProfessionalRepository) GetAllProfessionals() ([]entities.Professional, error) {
+	var result map[string]entities.Professional
 
-// func GetProfessionalByID(id int) (*entities.Professional, bool) {
-// 	for _, prof := range professionals {
-// 		if prof.ID == id {
-// 			return &prof, true
-// 		}
-// 	}
-// 	return nil, false
-// }
+	err := r.client.NewRef("professionals").Get(r.ctx, &result)
+	if err != nil {
+		return nil, err
+	}
 
-// func CreateProfessional(professional *entities.Professional) error {
-// 	professional.ID = len(professionals) + 1
-// 	professionals = append(professionals, *professional)
-// 	return nil
-// }
+	professionals := make([]entities.Professional, 0, len(result))
+	for key, p := range result {
+		p.ID = key
+		professionals = append(professionals, p)
+	}
 
-// func UpdateProfessional(professional *entities.Professional) error {
-// 	for i, prof := range professionals {
-// 		if prof.ID == professional.ID {
-// 			professionals[i] = *professional
-// 			return nil
-// 		}
-// 	}
-// 	return nil
-// }
+	return professionals, nil
+}
 
-// func DeleteProfessional(id int) error {
-// 	for i, prof := range professionals {
-// 		if prof.ID == id {
-// 			professionals = append(professionals[:i], professionals[i+1:]...)
-// 			return nil
-// 		}
-// 	}
-// 	return nil
-// }
+func (r *FirebaseProfessionalRepository) GetProfessionalByID(id string) (*entities.Professional, error) {
+	var prof entities.Professional
+	err := r.client.NewRef("professionals/"+id).Get(r.ctx, &prof)
+	if err != nil {
+		return nil, err
+	}
+	prof.ID = id
+	return &prof, nil
+}
