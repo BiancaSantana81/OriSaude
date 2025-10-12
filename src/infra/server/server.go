@@ -16,6 +16,5 @@ func NewServer() *gin.Engine {
 		api.PUT("/:id", controllers.UpdateProfessional)
 		api.DELETE("/:id", controllers.DeleteProfessional)
 	}
-
 	return r
 }
