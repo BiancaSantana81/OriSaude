@@ -51,17 +51,19 @@ func DeleteProfessionalByID(c *gin.Context, uc *usecases.DeleteProfessionalByIDU
 	c.JSON(http.StatusOK, gin.H{"message": "Professional deleted successfully"})
 }
 
-// func UpdateProfessional(c *gin.Context) {
-// 	id := c.Param("id")
-// 	var professional entities.Professional
-// 	if err := c.ShouldBindJSON(&professional); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	updatedProfessional := usecases.UpdateProfessional(id, &professional)
-// 	if updatedProfessional == nil {
-// 		c.JSON(http.StatusNotFound, gin.H{"error": "Professional not found"})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, updatedProfessional)
-// }
+func UpdateProfessional(c *gin.Context, uc *usecases.UpdateProfessionalUsecase) {
+	var prof entities.Professional
+	if err := c.ShouldBindJSON(&prof); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	prof.ID = c.Param("id")
+
+	if err := uc.Execute(&prof); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, prof)
+}

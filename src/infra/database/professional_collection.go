@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"ori_saude_api/src/core/entities"
 	"ori_saude_api/src/core/repositories"
 
@@ -55,12 +56,25 @@ func (r *FirebaseProfessionalRepository) GetAllProfessionals() ([]entities.Profe
 
 func (r *FirebaseProfessionalRepository) GetProfessionalByID(id string) (*entities.Professional, error) {
 	var prof entities.Professional
-	err := r.client.NewRef("professionals/" + id).Get(r.ctx, &prof)
+	err := r.client.NewRef("professionals/"+id).Get(r.ctx, &prof)
 	if err != nil {
 		return nil, err
 	}
 	prof.ID = id
 	return &prof, nil
+}
+
+func (r *FirebaseProfessionalRepository) UpdateProfessional(prof *entities.Professional) error {
+	if prof.ID == "" {
+		err := errors.New("professional ID is empty")
+		return err
+	}
+
+	ref := r.client.NewRef("professionals/" + prof.ID)
+	if err := ref.Set(r.ctx, prof); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *FirebaseProfessionalRepository) DeleteProfessional(id string) error {

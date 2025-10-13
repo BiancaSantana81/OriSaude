@@ -6,6 +6,6 @@ type ProfessionalRepository interface {
 	CreateProfessional(prof *entities.Professional) error
 	GetAllProfessionals() ([]entities.Professional, error)
 	GetProfessionalByID(id string) (*entities.Professional, error)
+	UpdateProfessional(prof *entities.Professional) error
 	DeleteProfessional(id string) error
-	// UpdateProfessional(prof *entities.Professional) error
 }
