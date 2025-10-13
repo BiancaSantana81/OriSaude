@@ -55,10 +55,18 @@ func (r *FirebaseProfessionalRepository) GetAllProfessionals() ([]entities.Profe
 
 func (r *FirebaseProfessionalRepository) GetProfessionalByID(id string) (*entities.Professional, error) {
 	var prof entities.Professional
-	err := r.client.NewRef("professionals/"+id).Get(r.ctx, &prof)
+	err := r.client.NewRef("professionals/" + id).Get(r.ctx, &prof)
 	if err != nil {
 		return nil, err
 	}
 	prof.ID = id
 	return &prof, nil
+}
+
+func (r *FirebaseProfessionalRepository) DeleteProfessional(id string) error {
+	ref := r.client.NewRef("professionals/" + id)
+	if err := ref.Delete(r.ctx); err != nil {
+		return err
+	}
+	return nil
 }

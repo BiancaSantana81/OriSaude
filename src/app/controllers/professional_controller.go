@@ -42,6 +42,15 @@ func GetProfessionalByID(c *gin.Context, uc *usecases.GetProfessionalByIDUsecase
 	c.JSON(200, prof)
 }
 
+func DeleteProfessionalByID(c *gin.Context, uc *usecases.DeleteProfessionalByIDUsecase) {
+	id := c.Param("id")
+	if err := uc.Execute(id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Professional deleted successfully"})
+}
+
 // func UpdateProfessional(c *gin.Context) {
 // 	id := c.Param("id")
 // 	var professional entities.Professional
@@ -55,13 +64,4 @@ func GetProfessionalByID(c *gin.Context, uc *usecases.GetProfessionalByIDUsecase
 // 		return
 // 	}
 // 	c.JSON(http.StatusOK, updatedProfessional)
-// }
-
-// func DeleteProfessional(c *gin.Context) {
-// 	id := c.Param("id")
-// 	if err := usecases.DeleteProfessional(id); err != nil {
-// 		c.JSON(http.StatusNotFound, gin.H{"error": "Professional not found"})
-// 		return
-// 	}
-// 	c.Status(http.StatusNoContent)
 // }

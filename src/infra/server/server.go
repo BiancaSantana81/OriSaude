@@ -17,6 +17,7 @@ func NewServer(client *db.Client, ctx context.Context) *gin.Engine {
 	createProfessionalUC := usecases.NewCreateProfessionalUsecase(profRepo)
 	getProfessionalsUC := usecases.NewGetProfessionalsUsecase(profRepo)
 	getProfessionalByIDUC := usecases.NewGetProfessionalByIDUsecase(profRepo)
+	deleteProfessionalByIDUC := usecases.NewDeleteProfessionalByIDUsecase(profRepo)
 
 	api := r.Group("/professionals")
 	{
@@ -30,6 +31,10 @@ func NewServer(client *db.Client, ctx context.Context) *gin.Engine {
 
 		api.GET("/:id", func(c *gin.Context) {
 			controllers.GetProfessionalByID(c, getProfessionalByIDUC)
+		})
+
+		api.DELETE("/:id", func(c *gin.Context) {
+			controllers.DeleteProfessionalByID(c, deleteProfessionalByIDUC)
 		})
 	}
 
