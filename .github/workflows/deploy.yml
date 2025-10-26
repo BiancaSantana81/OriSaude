@@ -10,14 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      GCP_PROJECT: ori-saude
+      GCP_PROJECT: ori-saude # seu ID do projeto GCP
       CLOUD_RUN_SERVICE: ori-saude-api
-      REGION: us-central1
+      REGION: us-central1 # pode mudar para sua região
 
     steps:
+    # 1️⃣ Puxar o código
     - name: Checkout código
       uses: actions/checkout@v3
 
+    # 2️⃣ Configurar gcloud
     - name: Configure gcloud
       uses: google-github-actions/setup-gcloud@v2
       with:
@@ -25,12 +27,18 @@ jobs:
         service_account_key: ${{ secrets.GCP_CREDENTIALS }}
         export_default_credentials: true
 
+    # 3️⃣ Autenticar Docker
+    - name: Authenticate Docker with gcloud
+      run: gcloud auth configure-docker
+
+    # 4️⃣ Build da imagem Docker
     - name: Build Docker image
       run: |
         IMAGE="gcr.io/${GCP_PROJECT}/${CLOUD_RUN_SERVICE}:${GITHUB_SHA}"
         docker build -t $IMAGE .
         docker push $IMAGE
 
+    # 5️⃣ Deploy para Cloud Run
     - name: Deploy to Cloud Run
       run: |
         gcloud run deploy ${CLOUD_RUN_SERVICE} \
