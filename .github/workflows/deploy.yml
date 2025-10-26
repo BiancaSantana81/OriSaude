@@ -1,0 +1,33 @@
+name: Deploy to Firebase Hosting
+
+on:
+  push:
+    branches:
+    - main # dispara quando houver push na branch main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v3
+
+    - name: Instalar Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+
+    - name: Instalar dependências
+      run: npm ci
+
+    - name: Build do projeto
+      run: npm run build
+
+    - name: Deploy para Firebase Hosting
+      uses: w9jds/firebase-action@v2.3.0
+      with:
+        args: deploy --only hosting
+      env:
+        FIREBASE_SERVICE_ACCOUNT: ${{ secrets.GCP_CREDENTIALS }}
+        PROJECT_ID: ori-saude
