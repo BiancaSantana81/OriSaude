@@ -7,15 +7,16 @@ RUN apk add --no-cache git ca-certificates
 
 WORKDIR /app
 
-# Baixar dependências
+# Copiar go.mod/go.sum e baixar dependências
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copiar código
-COPY . .
+# Copiar todo o código fonte
+COPY ./src ./src
 
-# Compilar binário estático
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server .
+# Compilar binário
+WORKDIR /app/src
+RUN CGO_ENABLED=0 GOOS=linux go build -a -o ../server main.go
 
 # ===========================
 # Stage 2: Minimal image
