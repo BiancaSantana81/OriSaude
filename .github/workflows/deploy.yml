@@ -10,16 +10,17 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      GCP_PROJECT: ori-saude # seu ID do projeto GCP
+      GCP_PROJECT: ori-saude # ID do projeto GCP
       CLOUD_RUN_SERVICE: ori-saude-api
-      REGION: us-central1 # pode mudar para sua região
+      REGION: us-central1 # região do Cloud Run
+      REPOSITORY: ori-saude-api # nome do Artifact Registry Docker
 
     steps:
-    # 1️⃣ Puxar o código
+    # 1️⃣ Puxar o código do repositório
     - name: Checkout código
       uses: actions/checkout@v3
 
-    # 2️⃣ Configurar gcloud
+    # 2️⃣ Configurar gcloud e autenticar a service account
     - name: Configure gcloud
       uses: google-github-actions/setup-gcloud@v2
       with:
@@ -27,22 +28,22 @@ jobs:
         service_account_key: ${{ secrets.GCP_CREDENTIALS }}
         export_default_credentials: true
 
-    # 3️⃣ Autenticar Docker
-    - name: Authenticate Docker with gcloud
-      run: gcloud auth configure-docker
+    # 3️⃣ Autenticar Docker com Artifact Registry
+    - name: Authenticate Docker with Artifact Registry
+      run: gcloud auth configure-docker us-docker.pkg.dev
 
-    # 4️⃣ Build da imagem Docker
-    - name: Build Docker image
+    # 4️⃣ Build da imagem Docker e push para Artifact Registry
+    - name: Build and push Docker image
       run: |
-        IMAGE="gcr.io/${GCP_PROJECT}/${CLOUD_RUN_SERVICE}:${GITHUB_SHA}"
+        IMAGE="us-docker.pkg.dev/${GCP_PROJECT}/${REPOSITORY}/${CLOUD_RUN_SERVICE}:${GITHUB_SHA}"
         docker build -t $IMAGE .
         docker push $IMAGE
 
-    # 5️⃣ Deploy para Cloud Run
+    # 5️⃣ Deploy automático no Cloud Run
     - name: Deploy to Cloud Run
       run: |
         gcloud run deploy ${CLOUD_RUN_SERVICE} \
-          --image "gcr.io/${GCP_PROJECT}/${CLOUD_RUN_SERVICE}:${GITHUB_SHA}" \
+          --image "us-docker.pkg.dev/${GCP_PROJECT}/${REPOSITORY}/${CLOUD_RUN_SERVICE}:${GITHUB_SHA}" \
           --platform managed \
           --region ${REGION} \
           --allow-unauthenticated \
