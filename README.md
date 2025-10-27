@@ -1,7 +1,5 @@
 # OríSaude
 
-🏗️ [EM CONSTRUÇÃO] 🏗️
-
 **OríSaude** é a plataforma final do curso **Aprofunda PretaLab**, criada para conectar pessoas negras a profissionais negros da área da saúde, promovendo acesso facilitado a serviços de saúde com representatividade.
 
 
@@ -9,7 +7,6 @@
 
 - Testes unitários e de integração
 - Pipeline de CI/CD no GitHub Actions
-- Deploy na Google Cloud
 - Autenticação e autorização para profissionais e usuários
 
 ---
@@ -23,6 +20,14 @@ O projeto foi desenvolvido como parte do curso **Aprofunda PretaLab**, com o obj
 - Injeção de dependências
 
 A aplicação permite **criar, consultar, atualizar e deletar profissionais**, com integração ao **Firebase Realtime Database** como banco de dados principal.
+
+## 🌐 Disponível em
+
+A API está atualmente **rodando no Google Cloud Run**:
+
+[https://ori-saude-api-69026747543.us-central1.run.app/professionals](https://ori-saude-api-69026747543.us-central1.run.app)
+
+> Você pode acessar diretamente ou usar esta URL como **base URL** para testes no Postman.
 
 ---
 
