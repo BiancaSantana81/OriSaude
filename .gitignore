@@ -1,3 +1,4 @@
 .env
+deploy.sh
 # database
 serviceAccountKey.json
