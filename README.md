@@ -25,7 +25,7 @@ A aplicação permite **criar, consultar, atualizar e deletar profissionais**, c
 
 A API está atualmente **rodando no Google Cloud Run**:
 
-[https://ori-saude-api-69026747543.us-central1.run.app/professionals](https://ori-saude-api-69026747543.us-central1.run.app)
+[link para aplicação](https://ori-saude-api-69026747543.us-central1.run.app/professionals/)
 
 > Você pode acessar diretamente ou usar esta URL como **base URL** para testes no Postman.
 
