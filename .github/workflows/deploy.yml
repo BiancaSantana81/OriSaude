@@ -1,41 +1,27 @@
-name: deploy-main
+name: Deploy to Cloud Run
 
 on:
   push:
-    branches: [ main ]
+    branches:
+    - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    - name: Authenticate with GCP
+    - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v2
       with:
-        credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+        credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-    - name: Configure Docker for GCP
-      run: gcloud auth configure-docker
-
-    - name: Build Docker image
-      run: |
-        docker build -t us-central1-docker.pkg.dev/ori-saude/ori-saude-api/ori-saude-api:latest .
-
-    - name: Push Docker image
-      run: |
-        docker push us-central1-docker.pkg.dev/ori-saude/ori-saude-api/ori-saude-api:latest
-
-    - name: Deploy to Cloud Run
-      run: |
-        gcloud run deploy ori-saude-api \
-          --image us-central1-docker.pkg.dev/ori-saude/ori-saude-api/ori-saude-api:latest \
-          --region us-central1 \
-          --platform managed \
-          --allow-unauthenticated \
-          --update-env-vars FIREBASE_CREDENTIALS="${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+    - name: Deploy to Cloud Run (direct source)
+      uses: google-github-actions/deploy-cloudrun@v2
+      with:
+        service: ori-saude-api
+        region: us-central1
+        source: .
+        project_id: ori-saude
