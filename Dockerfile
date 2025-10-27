@@ -1,36 +1,36 @@
-# Etapa 1: Build do Go
+# Stage 1: Build
 FROM golang:1.21-alpine AS build
+
+# Dependências do sistema
+RUN apk add --no-cache git
 
 # Diretório de trabalho
 WORKDIR /app
 
-# Copia os módulos e faz o download das dependências
+# Copia go.mod e go.sum e instala dependências
 COPY go.mod go.sum ./
 RUN go mod download
 
 # Copia o restante do código
 COPY . .
 
-# Build da aplicação
-RUN go build -o app ./src/main.go
+# Compila o binário
+RUN go build -o server ./src/main.go
 
-# Etapa 2: Runtime mínimo
-FROM alpine:3.18
+# Stage 2: Runtime
+FROM alpine:latest
 
-# Diretório de trabalho
+# Dependências mínimas
+RUN apk add --no-cache ca-certificates
+
 WORKDIR /app
 
 # Copia binário do build
-COPY --from=build /app/app .
+COPY --from=build /app/server .
 
-# Copia service account do Firebase (se necessário)
-COPY ./src/infra/database/serviceAccountKey.json ./serviceAccountKey.json
+# Variável de ambiente para Firebase (será setada pelo Cloud Run)
+# O valor virá do GitHub Actions (secrets)
+ENV FIREBASE_CREDENTIALS=""
 
-# Variáveis de ambiente (opcional: Cloud Run pode setar direto)
-ENV GOOGLE_APPLICATION_CREDENTIALS=/app/serviceAccountKey.json
-
-# Porta que Cloud Run vai expor
-EXPOSE 8080
-
-# Comando de execução
-CMD ["./app"]
+# Comando para rodar
+CMD ["./server"]

@@ -22,14 +22,14 @@ func InitFirebase() {
 		log.Println("Error: .env not found, proceeding with environment variables")
 	}
 
-	credPath := os.Getenv("FIREBASE_CREDENTIALS")
+	credJSON := os.Getenv("FIREBASE_CREDENTIALS")
 	dbURL := os.Getenv("FIREBASE_DB_URL")
 
-	if credPath == "" || dbURL == "" {
+	if credJSON == "" || dbURL == "" {
 		log.Fatal("Error: FIREBASE_CREDENTIALS or FIREBASE_DB_URL not set in environment variables")
 	}
 
-	opt := option.WithCredentialsFile(credPath)
+	opt := option.WithCredentialsJSON([]byte(credJSON))
 	Ctx = context.Background()
 
 	var err error
