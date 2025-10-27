@@ -2,8 +2,7 @@ name: deploy-main
 
 on:
   push:
-    branches:
-    - main
+    branches: [ main ]
 
 jobs:
   deploy:
@@ -14,19 +13,29 @@ jobs:
       id-token: write
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
     - name: Authenticate with GCP
       uses: google-github-actions/auth@v2
       with:
-        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+        credentials_json: "${{ secrets.GCP_CREDENTIALS }}"
+
+    - name: Configure Docker for GCP
+      run: gcloud auth configure-docker
+
+    - name: Build Docker image
+      run: |
+        docker build -t us-central1-docker.pkg.dev/ori-saude/ori-saude-api/ori-saude-api:latest .
+
+    - name: Push Docker image
+      run: |
+        docker push us-central1-docker.pkg.dev/ori-saude/ori-saude-api/ori-saude-api:latest
 
     - name: Deploy to Cloud Run
-      id: deploy
-      uses: google-github-actions/deploy-cloudrun@v2
-      with:
-        service: ${{ secrets.SERVICE_NAME }}
-        region: ${{ secrets.SERVICE_REGION }}
-        source: ./
-        env_vars: FIREBASE_CREDENTIALS=${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      run: |
+        gcloud run deploy ori-saude-api \
+          --image us-central1-docker.pkg.dev/ori-saude/ori-saude-api/ori-saude-api:latest \
+          --region us-central1 \
+          --platform managed \
+          --allow-unauthenticated \
+          --update-env-vars FIREBASE_CREDENTIALS="${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
